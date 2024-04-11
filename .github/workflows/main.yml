@@ -1,0 +1,98 @@
+name: Build, Upload and Publish Meadow MPAK to a Device Collection
+
+env:
+  ORGANIZATION_ID: "5b1d2b0dab744a04b79b245d881e18b8" # set this to your organization
+  API_KEY: "mcstg_203QjVxQ5VHv90pvIf7lre9SaUv_lFNRQfGlObuwksH1JMRz9v3ak6LKWcIDJ9cK23v7JA" # set this to an api key that has package scope
+  HOST: https://staging.meadowcloud.dev # set this to the API URL and if not specified will publish to production  
+  # COLLECTION_ID: "e49ed3998de44b0e8db547a1ee86e40c" # set this to your device collection trying to publish and if not specified will skip publishing
+  # OS_VERSION: "1.9.0.0" # Optional, set this to the OS version if required
+  
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '6.0.x'   
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore
+
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+
+    - name: Install Meadow CLI
+      run: dotnet tool install WildernessLabs.Meadow.CLI --global
+      
+    - name: Install Firmware
+      run: |
+        if [[ -n "${OS_VERSION}" ]]; then
+          meadow firmware download -v $OS_VERSION
+        else
+          meadow firmware download
+        fi
+      env:
+        OS_VERSION: ${{ env.OS_VERSION }}
+ 
+    - name: Build App with Meadow CLI
+      run: meadow app build
+
+    - name: Create Meadow Cloud Package
+      run: |
+        if [[ -n "${OS_VERSION}" ]]; then
+          meadow cloud package create -v $OS_VERSION
+        else
+          meadow cloud package create
+        fi
+        PACKAGE_PATH=$(find . -name '*.mpak')
+        echo "PACKAGE_PATH=${PACKAGE_PATH}" >> $GITHUB_ENV
+      env:
+        OS_VERSION: ${{ env.OS_VERSION }}
+
+    - name: Set Dynamic DESCRIPTION
+      run: echo "DESCRIPTION=Build for ${GITHUB_REF_NAME} at commit ${GITHUB_SHA::8} on $(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV     
+
+    - name: Setup HOST_PARAM
+      run: |
+        if [[ -n "${HOST}" ]]; then
+          echo "HOST_PARAM=--host ${HOST}" >> $GITHUB_ENV
+        else
+          echo "HOST_PARAM=" >> $GITHUB_ENV
+        fi
+      env:
+        HOST: ${{ env.HOST }}
+
+    - name: Upload Meadow Cloud Package
+      run: |
+        OUTPUT=$(meadow cloud package upload ${{ env.PACKAGE_PATH }} -o "$ORGANIZATION_ID" -d "$DESCRIPTION" --apikey "$API_KEY" $HOST_PARAM)
+        echo "$OUTPUT"
+        PACKAGE_ID=$(echo "$OUTPUT" | grep "Package Id:" | awk '{print $NF}')
+        echo "PACKAGE_ID=${PACKAGE_ID}" >> $GITHUB_ENV
+
+    - name: Check COLLECTION_ID to publish
+      id: check_collection_id
+      run: |
+        if [[ -n "${COLLECTION_ID}" ]]; then
+          echo "PUBLISH=true" >> $GITHUB_ENV
+        else
+          echo "PUBLISH=false" >> $GITHUB_ENV
+        fi
+      env:
+        COLLECTION_ID: ${{ env.COLLECTION_ID }}
+
+    - name: Publish Meadow Cloud Package
+      if: env.PUBLISH == 'true'
+      run: meadow cloud package publish ${{ env.PACKAGE_ID }} --collectionId "$COLLECTION_ID" --apikey "$API_KEY" $HOST_PARAM
