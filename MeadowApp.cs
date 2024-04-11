@@ -14,7 +14,7 @@ namespace F7FeatherDemo
 
         public override Task Initialize()
         {
-            Resolver.Log.Info("Initialize...");
+            Resolver.Log.Info("Initialize.....");
 
             onboardLed = new RgbPwmLed(
                 redPwmPin: Device.Pins.OnboardLedRed,
