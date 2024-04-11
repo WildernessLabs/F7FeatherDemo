@@ -4,6 +4,7 @@ using Meadow.Foundation.Leds;
 using Meadow.Peripherals.Leds;
 using System;
 using System.Threading.Tasks;
+using Meadow.Update;
 
 namespace F7FeatherDemo
 {
@@ -28,6 +29,21 @@ namespace F7FeatherDemo
         {
             Resolver.Log.Info("Run...");
 
+            var svc = Resolver.Services.Get<IUpdateService>() as Meadow.Update.IUpdateService;
+            svc.ClearUpdates(); // comment to preserve persisted info
+
+            svc.UpdateAvailable += (updateService, info) =>
+            {
+                Resolver.Log.Info($"Update available! meta: {info.Metadata}");
+                
+                // queue it for retreival "later"
+                // Task.Run(async () =>
+                // {
+                //     await Task.Delay(2000);
+                //     updateService.RetrieveUpdate(info);
+                // });
+            };
+            
             return CycleColors(TimeSpan.FromMilliseconds(1000));
         }
 
