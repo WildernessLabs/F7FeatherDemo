@@ -6,7 +6,7 @@
 Credentials:
 
     # WiFi SSID
-    Ssid: comeonentrada
+    Ssid: {{CONFIG_WIFI_SSID}}
 
     # WiFi Password
-    Password: brandon11763
+    Password: {{CONFIG_WIFI_PASS}}
