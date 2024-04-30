@@ -1,136 +1,23 @@
-env:
-  # OS_VERSION: "1.9.0.0" # Optional, set this to the OS version if required
-  ORGANIZATION_ID: "5b1d2b0dab744a04b79b245d881e18b8" # set this to your organization
-  API_KEY: "mcstg_203QjVxQ5VHv90pvIf7lre9SaUv_lFNRQfGlObuwksH1JMRz9v3ak6LKWcIDJ9cK23v7JA" # set this to an api key that has package scope
-  HOST: https://staging.meadowcloud.dev # set this to the API URL and if not specified will publish to production  
-  #COLLECTION_ID: "4965ba4d6b504c879928494e9bbe415d" # set this to your device collection trying to publish and if not specified will skip publishing
-  METADATA: "metadata part of my publish" # Optional, set this to the desired metadata for publish if required
-  CONFIG_WIFI_SSID: "wifissid" # Optional, set this to a matching token to replaced within your *.yaml files if required
-  CONFIG_WIFI_PASS: "password"
-  
+name: Deploy Using New Action
+
 on:
   push:
-    branches: [ "main" ]
+    branches: [main]
   pull_request:
-    branches: [ "main" ]
+    branches: [main]    
 
 jobs:
-  build-and-publish:
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v3
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+    - name: Deploy Meadow MPAK
+      uses: j-koda80/Meadow.Cloud-Deploy-MPAK@main
       with:
-        dotnet-version: '6.0.x'   
-
-    - name: Restore dependencies
-      run: dotnet restore
-
-    - name: Build
-      run: dotnet build --no-restore
-
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
-
-    - name: Install Meadow.CLI
-      run: dotnet tool install WildernessLabs.Meadow.CLI --global
-      
-    - name: Install Firmware
-      run: |
-        if [[ -n "${OS_VERSION}" ]]; then
-          meadow firmware download -v $OS_VERSION
-        else
-          meadow firmware download
-        fi
-      env:
-        OS_VERSION: ${{ env.OS_VERSION }}
-
-    - name: Replace Environment Variables in YAML files
-      run: |
-        # Collect all CONFIG_ variables into an array
-        CONFIG_VARS=()
-        echo "Listing all environment variables..."
-        for var in $(compgen -v); do
-          if [[ "$var" =~ ^CONFIG_ ]] && [ "$var" != "CONFIG_VARS" ]; then
-            CONFIG_VARS+=("$var")
-            echo "Found CONFIG variable: $var=${!var}"
-          fi
-        done
-
-        # Debugging output to show collected variables
-        if [ ${#CONFIG_VARS[@]} -eq 0 ]; then
-          echo "No CONFIG_ variables set, skipping replacement."
-          exit 0
-        else
-          echo "Config vars to process:"
-          for var in "${CONFIG_VARS[@]}"; do
-            echo "$var = ${!var}"
-          done
-        fi
-
-        # Process files only if CONFIG_ variables exist
-        for file in $(find . -name '*.yaml'); do
-          echo "Processing $file"
-          for var in "${CONFIG_VARS[@]}"; do
-            placeholder="{{${var}}}" # Prepare the placeholder string
-            if grep -q "$placeholder" $file; then
-              echo "Replacing $placeholder with value ${!var} in $file"
-              sed -i -e "s/$placeholder/${!var}/g" $file
-            else
-              echo "No occurrences of $placeholder found in $file"
-            fi
-          done
-        done
-      shell: bash
-      
-    - name: Create Package
-      run: |
-        meadow app build
-        if [[ -n "${OS_VERSION}" ]]; then
-          meadow cloud package create -v $OS_VERSION
-        else
-          meadow cloud package create
-        fi
-        PACKAGE_PATH=$(find . -name '*.mpak')
-        echo "PACKAGE_PATH=${PACKAGE_PATH}" >> $GITHUB_ENV
-      env:
-        OS_VERSION: ${{ env.OS_VERSION }}
-
-    - name: Upload Package
-      run: |
-        DESCRIPTION="Build for ${GITHUB_REF_NAME} at commit ${GITHUB_SHA::8} on $(date +'%Y-%m-%d %H:%M:%S')"
-        HOST_PARAM=""
-        if [[ -n "${HOST}" ]]; then
-          HOST_PARAM="--host ${HOST}"
-        fi
-        OUTPUT=$(meadow cloud package upload ${{ env.PACKAGE_PATH }} -o "$ORGANIZATION_ID" -d "$DESCRIPTION" --apikey "$API_KEY" $HOST_PARAM)
-        echo "$OUTPUT"
-        PACKAGE_ID=$(echo "$OUTPUT" | grep "Package Id:" | awk '{print $NF}')
-        echo "PACKAGE_ID=${PACKAGE_ID}" >> $GITHUB_ENV
-      env:
-        HOST: ${{ env.HOST }}
-
-    - name: Publish Package
-      run: |
-        if [[ -n "${COLLECTION_ID}" ]]; then
-          COMMAND="meadow cloud package publish ${{ env.PACKAGE_ID }} --collectionId \"$COLLECTION_ID\" --apikey \"$API_KEY\""
-          HOST_PARAM=""
-          if [[ -n "${HOST}" ]]; then
-            HOST_PARAM="--host ${HOST}"
-          fi
-          if [[ -n "${METADATA}" ]]; then
-            COMMAND="$COMMAND --metadata \"${METADATA}\""
-          fi
-          COMMAND="$COMMAND $HOST_PARAM"
-          echo "Running command: $COMMAND"
-          eval $COMMAND
-        else
-          echo "No COLLECTION_ID provided, skipping package publish."
-        fi
-      env:
-        METADATA: ${{ env.METADATA }}
-        HOST: ${{ env.HOST }}
-        COLLECTION_ID: ${{ env.COLLECTION_ID }}
+        ORGANIZATION_ID: "5b1d2b0dab744a04b79b245d881e18b8" # set this to your organization
+        API_KEY: ${{ secrets.API_KEY }} # set this to an api key that has package scope        
+        HOST: "https://staging.meadowcloud.dev" # set this to the API URL and if not specified will publish to production  
+        #COLLECTION_ID: "4965ba4d6b504c879928494e9bbe415d" # set this to your device collection trying to publish and if not specified will skip publishing
+        #CLI_VERSION: "2.0.30" # Optional, set this to the CLI version if required
+        #OS_VERSION: "1.10.0.0" # Optional, set this to the OS version if required        
+        METADATA: "metadata part of my publish" # Optional, set this to the desired metadata for publish if required
+        CONFIGS : '{"CONFIG_WIFI_SSID": "${{ secrets.CONFIG_WIFI_SSID }}", "CONFIG_WIFI_PASS": "${{ secrets.CONFIG_WIFI_PASS }}"}' # Optional, set this to a matching token to replaced within your *.yaml files if required
