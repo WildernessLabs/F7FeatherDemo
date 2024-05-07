@@ -13,7 +13,7 @@ jobs:
         ORGANIZATION_ID: "5b1d2b0dab744a04b79b245d881e18b8" # set this to your organization
         API_KEY: ${{ secrets.API_KEY }} # set this to an api key that has package scope        
         #CLI_VERSION: "2.0.30" # Optional, set this to the CLI version if required
-        #OS_VERSION: "1.10.0.0" # Optional, set this to the OS version if required        
+        OS_VERSION: "1.11.0.0" # Optional, set this to the OS version if required        
         CONFIGS : '{"CONFIG_SSID": "${{ secrets.CONFIG_SSID }}", "CONFIG_PASSWORD": "${{ secrets.CONFIG_PASSWORD }}"}' # Optional, set this to a matching token to replaced within your *.yaml files if required
         HOST: "https://staging.meadowcloud.dev" # set this to the API URL and if not specified will publish to production  
     - name: Publish Meadow MPAK
