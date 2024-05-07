@@ -1,4 +1,4 @@
-name: Build, Upload and Publish Using Modular Actions
+name: Upload/Publish MPAK
 
 on:
   workflow_dispatch:
@@ -7,7 +7,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Build and Upload Meadow MPAK
+    - name: Build+Upload
       uses: WildernessLabs/meadow-cloud-package-upload@main
       with:        
         ORGANIZATION_ID: "5b1d2b0dab744a04b79b245d881e18b8" # set this to your organization
@@ -16,7 +16,7 @@ jobs:
         OS_VERSION: "1.11.0.0" # Optional, set this to the OS version if required        
         CONFIGS : '{"CONFIG_SSID": "${{ secrets.CONFIG_SSID }}", "CONFIG_PASSWORD": "${{ secrets.CONFIG_PASSWORD }}"}' # Optional, set this to a matching token to replaced within your *.yaml files if required
         HOST: "https://staging.meadowcloud.dev" # set this to the API URL and if not specified will publish to production  
-    - name: Publish Meadow MPAK
+    - name: Publish
       uses: WildernessLabs/meadow-cloud-package-publish@main
       with:        
         API_KEY: ${{ secrets.API_KEY }} # set this to an api key that has package scope        
