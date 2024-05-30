@@ -22,7 +22,7 @@ Coprocessor:
     AutomaticallyReconnect: true
 
     # Maximum number of retry attempts for connections etc. before an error code is returned.
-    MaximumRetryCount: 3
+    MaximumRetryCount: 99
 
 # Network configuration.
 Network:
@@ -57,6 +57,6 @@ Network:
         - 3.pool.ntp.org
 
     # IP addresses of the DNS servers.
-#    DnsServers:
-#        - 1.1.1.1
-#        - 8.8.8.8
+    DnsServers:
+        - 1.1.1.1
+        - 8.8.8.8
