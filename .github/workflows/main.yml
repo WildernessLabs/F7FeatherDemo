@@ -11,7 +11,7 @@ jobs:
 
     steps:
 
-    - name: Build+Upload
+    - name: Build + Upload
       uses: WildernessLabs/meadow-cloud-package-upload@v1.0.0
       with:        
         ORGANIZATION_ID: ${{ secrets.CONFIG_ORGANIZATION_ID }} # set this to your organization
