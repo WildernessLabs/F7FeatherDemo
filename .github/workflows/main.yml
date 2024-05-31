@@ -4,22 +4,24 @@ on:
   workflow_dispatch:
 
 jobs:
+
   deploy:
+
     runs-on: ubuntu-latest
+
     steps:
+
     - name: Build+Upload
       uses: WildernessLabs/meadow-cloud-package-upload@v1.0.0
       with:        
-        ORGANIZATION_ID: "5b1d2b0dab744a04b79b245d881e18b8" # set this to your organization
+        ORGANIZATION_ID: ${{ secrets.CONFIG_ORGANIZATION_ID }} # set this to your organization
         API_KEY: ${{ secrets.API_KEY }} # set this to an api key that has package scope        
-        #CLI_VERSION: "2.0.30" # Optional, set this to the CLI version if required
-        OS_VERSION: "1.11.1.44" # Optional, set this to the OS version if required        
+        OS_VERSION: "1.12.0.0" # Optional, set this to the OS version if required        
         CONFIGS : '{"CONFIG_WIFI_SSID": "${{ secrets.CONFIG_WIFI_SSID }}", "CONFIG_WIFI_PASS": "${{ secrets.CONFIG_WIFI_PASS }}"}' # Optional, set this to a matching token to replaced within your *.yaml files if required
-        HOST: "https://staging.meadowcloud.dev" # set this to the API URL and if not specified will publish to production  
+    
     - name: Publish
       uses: WildernessLabs/meadow-cloud-package-publish@v1.0.0
       with:        
         API_KEY: ${{ secrets.API_KEY }} # set this to an api key that has package scope        
-        COLLECTION_ID: "4965ba4d6b504c879928494e9bbe415d" # set this to an api key that has package scope        
-        HOST: "https://staging.meadowcloud.dev" # set this to the API URL and if not specified will publish to production  
+        COLLECTION_ID: ${{ secrets.CONFIG_COLLECTIONS_ID }} # set this to an api key that has package scope        
         METADATA: "metadata part of my publish" # Optional, set this to the desired metadata for publish if required
