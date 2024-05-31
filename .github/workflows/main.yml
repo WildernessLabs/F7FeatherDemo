@@ -19,7 +19,7 @@ jobs:
     - name: Build + Upload
       uses: WildernessLabs/meadow-cloud-package-upload@main
       with:
-        project_path: "F7FeatherDemo/Source/F7FeatherDemo"
+        project_path: "F7FeatherDemo/Source/F7FeatherDemo/"
         organization_id: ${{ secrets.CONFIG_ORGANIZATION_ID }} # set this to your organization
         api_key: ${{ secrets.API_KEY }} # set this to an api key that has package scope        
         os_version: "1.12.0.0" # Optional, set this to the OS version if required        
