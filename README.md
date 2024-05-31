@@ -2,7 +2,7 @@
 
 # F7FeatherDemo
 
-This repository is configured to use Meadow.Cloud's publisher with two GitHub Action methods:
+This repository is configured with Meadow.Cloud's automatic publisher using two GitHub Action methods:
 
 - [meadow-cloud-package-upload](https://github.com/WildernessLabs/meadow-cloud-package-upload)
 - [meadow-cloud-package-publish](https://github.com/WildernessLabs/meadow-cloud-package-publish)
