@@ -14,14 +14,14 @@ jobs:
     - name: Build + Upload
       uses: WildernessLabs/meadow-cloud-package-upload@v1.0.0
       with:        
-        ORGANIZATION_ID: ${{ secrets.CONFIG_ORGANIZATION_ID }} # set this to your organization
-        API_KEY: ${{ secrets.API_KEY }} # set this to an api key that has package scope        
-        OS_VERSION: "1.12.0.0" # Optional, set this to the OS version if required        
-        CONFIGS : '{"CONFIG_WIFI_SSID": "${{ secrets.CONFIG_WIFI_SSID }}", "CONFIG_WIFI_PASS": "${{ secrets.CONFIG_WIFI_PASS }}"}' # Optional, set this to a matching token to replaced within your *.yaml files if required
+        organization_id: ${{ secrets.CONFIG_ORGANIZATION_ID }} # set this to your organization
+        api_key: ${{ secrets.API_KEY }} # set this to an api key that has package scope        
+        os_version: "1.12.0.0" # Optional, set this to the OS version if required        
+        configs : '{"CONFIG_WIFI_SSID": "${{ secrets.CONFIG_WIFI_SSID }}", "CONFIG_WIFI_PASS": "${{ secrets.CONFIG_WIFI_PASS }}"}' # Optional, set this to a matching token to replaced within your *.yaml files if required
     
     - name: Publish
       uses: WildernessLabs/meadow-cloud-package-publish@v1.0.0
       with:        
-        API_KEY: ${{ secrets.API_KEY }} # set this to an api key that has package scope        
-        COLLECTION_ID: ${{ secrets.CONFIG_COLLECTIONS_ID }} # set this to an api key that has package scope        
-        METADATA: "metadata part of my publish" # Optional, set this to the desired metadata for publish if required
+        api_key: ${{ secrets.API_KEY }} # set this to an api key that has package scope        
+        collection_id: ${{ secrets.CONFIG_COLLECTIONS_ID }} # set this to an api key that has package scope        
+        metadata: "metadata part of my publish" # Optional, set this to the desired metadata for publish if required
