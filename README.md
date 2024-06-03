@@ -4,8 +4,8 @@
 
 This repository is configured with Meadow.Cloud's automatic publisher using two GitHub Action methods:
 
-- [meadow-cloud-package-upload](https://github.com/WildernessLabs/meadow-cloud-package-upload)
-- [meadow-cloud-package-publish](https://github.com/WildernessLabs/meadow-cloud-package-publish)
+- [Meadow.Cloud Package Upload](https://github.com/marketplace/actions/meadow-cloud-package-upload)
+- [Meadow.Cloud Package Publish](https://github.com/marketplace/actions/meadow-cloud-package-publish)
 
 You can see how its configured in the `main.yml` workflow script.
 
