@@ -6,13 +6,7 @@
 Credentials:
 
     # WiFi SSID
-    Ssid: WIFI-F190
+    Ssid: {{CONFIG_WIFI_SSID}}
 
     # WiFi Password
-    Password: bloom8369eighty
-
-    # WiFi SSID
-    #Ssid: {{CONFIG_WIFI_SSID}}
-
-    # WiFi Password
-    #Password: {{CONFIG_WIFI_PASS}}
+    Password: {{CONFIG_WIFI_PASS}}
